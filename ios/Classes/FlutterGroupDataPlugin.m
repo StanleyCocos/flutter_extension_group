@@ -16,35 +16,63 @@
         methodChannelWithName:@"flutter_group_data"
               binaryMessenger:[registrar messenger]];
     FlutterGroupDataPlugin * instance = [[FlutterGroupDataPlugin alloc] init];
+    [registrar addApplicationDelegate: instance];
     [registrar addMethodCallDelegate:instance channel:channel];
+
 }
 
 - (void)handleMethodCall:(FlutterMethodCall*)call result:(FlutterResult)result {
 
-    if ([@"getGroupShared" isEqualToString:call.method]) {
-        NSString * key = call.arguments[@"key"];
-    
-        NSUserDefaults * defaults = [[NSUserDefaults alloc] initWithSuiteName:@"group.com.addcn.target"];
-        if(defaults != nil && key != nil){
-            NSString * value = [defaults objectForKey: key];
-            if(value == nil){
-                result(@"");
+
+    if([@"getPushToken" isEqualToString:call.method]){
+        NSUserDefaults * defaults = [NSUserDefaults standardUserDefaults];
+        NSString * token = [defaults objectForKey:@"ios_token"];
+        if(token == nil || token.length <= 0){
+            result(@"123");
+        } else {
+            result(token);
+        }
+    }else {
+        if ([@"getGroupShared" isEqualToString:call.method]) {
+            NSString * key = call.arguments[@"key"];
+
+            NSUserDefaults * defaults = [[NSUserDefaults alloc] initWithSuiteName:@"group.com.addcn.target"];
+            if(defaults != nil && key != nil){
+                NSString * value = [defaults objectForKey: key];
+                if(value == nil){
+                    result(@"");
+                } else {
+                    result(value);
+                }
             } else {
-                result(value);
+                result(@"");
             }
         } else {
-            result(@"");
-        }
-    } else {
-        NSString * key = call.arguments[@"key"];
-        NSString * value = call.arguments[@"value"];
-        
-        NSUserDefaults * defaults = [[NSUserDefaults alloc] initWithSuiteName:@"group.com.addcn.target"];
-        if(defaults != nil && key != nil && value != nil){
-            [defaults setObject:value forKey:key];
-        } else {
-            //result(@"");
+            NSString * key = call.arguments[@"key"];
+            NSString * value = call.arguments[@"value"];
+
+            NSUserDefaults * defaults = [[NSUserDefaults alloc] initWithSuiteName:@"group.com.addcn.target"];
+            if(defaults != nil && key != nil && value != nil){
+                [defaults setObject:value forKey:key];
+            } else {
+                //result(@"");
+            }
         }
     }
+
 }
+
+
+- (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken{
+
+    NSUInteger len = [deviceToken length];
+    char * chars = (char *)[deviceToken bytes];
+    NSMutableString * hexString = [[NSMutableString alloc] init];
+    for(NSUInteger i = 0; i < len; i++){
+        [hexString appendString:[NSString stringWithFormat:@"%0.2hhx", chars[i]]];
+    }
+    NSUserDefaults * defaults = [NSUserDefaults standardUserDefaults];
+    [defaults setObject:hexString forKey:@"ios_token"];
+}
+
 @end
