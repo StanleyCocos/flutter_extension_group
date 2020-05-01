@@ -24,4 +24,9 @@ class FlutterGroupData {
     final String version = await _channel.invokeMethod('getPushToken');
     return version;
   }
+
+  static Future<String> getPushMessage() async {
+    final String version = await _channel.invokeMethod('getPushMessage');
+    return version;
+  }
 }

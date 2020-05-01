@@ -10,8 +10,6 @@
 
 @implementation FlutterGroupDataPlugin
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar>*)registrar {
-  //[SwiftFlutterGroupDataPlugin registerWithRegistrar:registrar];
-    
     FlutterMethodChannel* channel = [FlutterMethodChannel
         methodChannelWithName:@"flutter_group_data"
               binaryMessenger:[registrar messenger]];
@@ -32,7 +30,15 @@
         } else {
             result(token);
         }
-    }else {
+    } else if ([@"getPushMessage" isEqualToString: call.method]){
+        NSUserDefaults * defaults = [NSUserDefaults standardUserDefaults];
+        NSString * message = [defaults objectForKey:@"push_message"];
+        if(message == nil || message.length <= 0){
+            return @"";
+        } else {
+            return message;
+        }
+    } else {
         if ([@"getGroupShared" isEqualToString:call.method]) {
             NSString * key = call.arguments[@"key"];
 
@@ -73,6 +79,18 @@
     }
     NSUserDefaults * defaults = [NSUserDefaults standardUserDefaults];
     [defaults setObject:hexString forKey:@"ios_token"];
+}
+
+- (void)userNotificationCenter:(UNUserNotificationCenter *)center didReceiveNotificationResponse:(UNNotificationResponse *)response withCompletionHandler:(void (^)())completionHandler{
+ 
+  //处理推送过来的数据
+    NSDictionary * message = response.notification.request.content.userInfo
+    NSUserDefaults * defaults = [NSUserDefaults standardUserDefaults];
+    [defaults setObject:message forKey:@"push_message"];
+  //[self handlePushMessage:response.notification.request.content.userInfo];
+ 
+  completionHandler();
+ 
 }
 
 @end
