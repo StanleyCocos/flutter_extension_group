@@ -19,14 +19,4 @@ class FlutterGroupData {
     );
     return version;
   }
-
-  static Future<String> getPushToken() async {
-    final String version = await _channel.invokeMethod('getPushToken');
-    return version;
-  }
-
-  static Future<dynamic> getPushMessage() async {
-    final message = await _channel.invokeMethod('getPushMessage');
-    return message;
-  }
 }

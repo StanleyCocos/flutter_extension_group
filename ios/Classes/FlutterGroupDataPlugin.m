@@ -9,6 +9,8 @@
 #endif
 
 @implementation FlutterGroupDataPlugin
+
+
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar>*)registrar {
     FlutterMethodChannel* channel = [FlutterMethodChannel
         methodChannelWithName:@"flutter_group_data"
@@ -22,77 +24,30 @@
 - (void)handleMethodCall:(FlutterMethodCall*)call result:(FlutterResult)result {
 
 
-    if([@"getPushToken" isEqualToString:call.method]){
-        NSUserDefaults * defaults = [NSUserDefaults standardUserDefaults];
-        NSString * token = [defaults objectForKey:@"ios_token"];
-        if(token == nil || token.length <= 0){
-            result(@"123");
+  if ([@"getGroupShared" isEqualToString:call.method]) {
+        NSString * key = call.arguments[@"key"];
+
+        NSUserDefaults * defaults = [[NSUserDefaults alloc] initWithSuiteName:@"group.com.addcn.target"];
+        if(defaults != nil && key != nil){
+            NSString * value = [defaults objectForKey: key];
+            if(value == nil){
+                result(@"");
+            } else {
+                result(value);
+            }
         } else {
-            result(token);
-        }
-    } else if ([@"getPushMessage" isEqualToString: call.method]){
-        NSUserDefaults * defaults = [NSUserDefaults standardUserDefaults];
-        NSString * message = [defaults objectForKey:@"push_message"];
-        if(message == nil || ![message isKindOfClass:[NSDictionary  class]]){
-            result(@{@"key": @"value"});
-        } else {
-            result(message);
+            result(@"");
         }
     } else {
-        if ([@"getGroupShared" isEqualToString:call.method]) {
-            NSString * key = call.arguments[@"key"];
+        NSString * key = call.arguments[@"key"];
+        NSString * value = call.arguments[@"value"];
 
-            NSUserDefaults * defaults = [[NSUserDefaults alloc] initWithSuiteName:@"group.com.addcn.target"];
-            if(defaults != nil && key != nil){
-                NSString * value = [defaults objectForKey: key];
-                if(value == nil){
-                    result(@"");
-                } else {
-                    result(value);
-                }
-            } else {
-                result(@"");
-            }
+        NSUserDefaults * defaults = [[NSUserDefaults alloc] initWithSuiteName:@"group.com.addcn.target"];
+        if(defaults != nil && key != nil && value != nil){
+            [defaults setObject:value forKey:key];
         } else {
-            NSString * key = call.arguments[@"key"];
-            NSString * value = call.arguments[@"value"];
-
-            NSUserDefaults * defaults = [[NSUserDefaults alloc] initWithSuiteName:@"group.com.addcn.target"];
-            if(defaults != nil && key != nil && value != nil){
-                [defaults setObject:value forKey:key];
-            } else {
-                //result(@"");
-            }
+            //result(@"");
         }
     }
-
 }
-
-
-- (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken{
-
-    NSUInteger len = [deviceToken length];
-    char * chars = (char *)[deviceToken bytes];
-    NSMutableString * hexString = [[NSMutableString alloc] init];
-    for(NSUInteger i = 0; i < len; i++){
-        [hexString appendString:[NSString stringWithFormat:@"%0.2hhx", chars[i]]];
-    }
-    NSUserDefaults * defaults = [NSUserDefaults standardUserDefaults];
-    [defaults setObject:hexString forKey:@"ios_token"];
-}
-
-- (void)userNotificationCenter:(UNUserNotificationCenter *)center didReceiveNotificationResponse:(UNNotificationResponse *)response withCompletionHandler:(void (^)(void))completionHandler API_AVAILABLE(ios(10.0)){
- 
-  //处理推送过来的数据
-    NSDictionary * message = response.notification.request.content.userInfo;
-    if(message != nil && [message isKindOfClass:[NSDictionary class]]){
-        NSUserDefaults * defaults = [NSUserDefaults standardUserDefaults];
-        [defaults setObject:message forKey:@"push_message"];
- //       self.message = message;
-    }
-    
-  completionHandler();
- 
-}
-
 @end

@@ -2,6 +2,4 @@
 
 @interface FlutterGroupDataPlugin : NSObject<FlutterPlugin>
 
-@property(strong, nonatomic) NSDictionary * message;
-
 @end
