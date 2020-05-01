@@ -34,9 +34,9 @@
         NSUserDefaults * defaults = [NSUserDefaults standardUserDefaults];
         NSString * message = [defaults objectForKey:@"push_message"];
         if(message == nil || message.length <= 0){
-            return @"";
+            result(@"0");
         } else {
-            return message;
+            result(message);
         }
     } else {
         if ([@"getGroupShared" isEqualToString:call.method]) {
@@ -84,11 +84,12 @@
 - (void)userNotificationCenter:(UNUserNotificationCenter *)center didReceiveNotificationResponse:(UNNotificationResponse *)response withCompletionHandler:(void (^)())completionHandler{
  
   //处理推送过来的数据
-    NSDictionary * message = response.notification.request.content.userInfo
-    NSUserDefaults * defaults = [NSUserDefaults standardUserDefaults];
-    [defaults setObject:message forKey:@"push_message"];
-  //[self handlePushMessage:response.notification.request.content.userInfo];
- 
+    NSDictionary * message = response.notification.request.content.userInfo;
+    if(message != nil && [message isKindOfClass:[NSDictionary class]]){
+        NSUserDefaults * defaults = [NSUserDefaults standardUserDefaults];
+        [defaults setObject:message forKey:@"push_message"];
+    }
+    
   completionHandler();
  
 }
