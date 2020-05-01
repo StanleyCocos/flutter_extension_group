@@ -33,8 +33,8 @@
     } else if ([@"getPushMessage" isEqualToString: call.method]){
         NSUserDefaults * defaults = [NSUserDefaults standardUserDefaults];
         NSString * message = [defaults objectForKey:@"push_message"];
-        if(message == nil || message.length <= 0){
-            result(@"0");
+        if(message == nil || ![message isKindOfClass:[NSDictionary  class]]){
+            result(@{@"key": @"value"});
         } else {
             result(message);
         }
@@ -81,13 +81,14 @@
     [defaults setObject:hexString forKey:@"ios_token"];
 }
 
-- (void)userNotificationCenter:(UNUserNotificationCenter *)center didReceiveNotificationResponse:(UNNotificationResponse *)response withCompletionHandler:(void (^)())completionHandler{
+- (void)userNotificationCenter:(UNUserNotificationCenter *)center didReceiveNotificationResponse:(UNNotificationResponse *)response withCompletionHandler:(void (^)(void))completionHandler API_AVAILABLE(ios(10.0)){
  
   //处理推送过来的数据
     NSDictionary * message = response.notification.request.content.userInfo;
     if(message != nil && [message isKindOfClass:[NSDictionary class]]){
         NSUserDefaults * defaults = [NSUserDefaults standardUserDefaults];
         [defaults setObject:message forKey:@"push_message"];
+ //       self.message = message;
     }
     
   completionHandler();
