@@ -30,6 +30,9 @@ class _MyAppState extends State<MyApp> {
       groupData = 'Failed to get platform version.';
     }
 
+    //FlutterGroupData.getPushMessage()
+    Map<String>
+
     // If the widget was removed from the tree while the asynchronous platform
     // message was in flight, we want to discard the reply rather than calling
     // setState to update our non-existent appearance.
