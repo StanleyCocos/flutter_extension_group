@@ -18,18 +18,13 @@
     FlutterGroupDataPlugin * instance = [[FlutterGroupDataPlugin alloc] init];
     [registrar addApplicationDelegate: instance];
     [registrar addMethodCallDelegate:instance channel:channel];
-
 }
 
 - (void)handleMethodCall:(FlutterMethodCall*)call result:(FlutterResult)result {
-
-
-  if ([@"getGroupShared" isEqualToString:call.method]) {
-        NSString * key = call.arguments[@"key"];
-
+  if ([@"getGroupSharedBadge" isEqualToString:call.method]) {
         NSUserDefaults * defaults = [[NSUserDefaults alloc] initWithSuiteName:@"group.com.addcn.target"];
-        if(defaults != nil && key != nil){
-            NSString * value = [defaults objectForKey: key];
+        if(defaults != nil){
+            NSString * value = [defaults objectForKey: @"BadgeNumber"];
             if(value == nil){
                 result(@"");
             } else {
@@ -38,15 +33,19 @@
         } else {
             result(@"");
         }
-    } else {
-        NSString * key = call.arguments[@"key"];
-        NSString * value = call.arguments[@"value"];
-
+    } else if ([@"setGroupSharedBadge" isEqualToString:call.method]) {
+        NSString * value = call.arguments;
+        if(value == nil){ value = @"";}
         NSUserDefaults * defaults = [[NSUserDefaults alloc] initWithSuiteName:@"group.com.addcn.target"];
-        if(defaults != nil && key != nil && value != nil){
-            [defaults setObject:value forKey:key];
-        } else {
-            //result(@"");
+        if(defaults != nil && value != nil){
+            [defaults setObject:value forKey:@"BadgeNumber"];
+        }
+    } else if([@"setGroupSharedIMIE" isEqualToString:call.method]){
+        NSString * value = call.arguments;
+        if(value == nil){ value = @"";}
+        NSUserDefaults * defaults = [[NSUserDefaults alloc] initWithSuiteName:@"group.com.addcn.target"];
+        if(defaults != nil && value != nil){
+            [defaults setObject:value forKey:@"app_imei"];
         }
     }
 }

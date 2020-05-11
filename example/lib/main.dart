@@ -25,7 +25,7 @@ class _MyAppState extends State<MyApp> {
     String groupData;
     // Platform messages may fail, so we use a try/catch PlatformException.
     try {
-      groupData = await FlutterGroupData.groupShared("number");
+      groupData = await FlutterGroupData.getGroupSharedBadge();
     } on PlatformException {
       groupData = 'Failed to get platform version.';
     }
@@ -77,7 +77,8 @@ class _MyAppState extends State<MyApp> {
               Padding(padding: EdgeInsets.only(top: 100),),
               GestureDetector(
                 onTap: (){
-                  FlutterGroupData.setGroupShared("number", "10");
+                  FlutterGroupData.setGroupSharedBadge("22");
+                  FlutterGroupData.setGroupSharedBadge("11111");
                 },
                 child: Container(
                   width: 100,
