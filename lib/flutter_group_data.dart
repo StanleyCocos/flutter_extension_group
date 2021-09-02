@@ -8,8 +8,8 @@ class FlutterGroupData {
 
 
   /// 获取当前角标数量
-  static Future<String> getGroupSharedBadge() async {
-    final String version =
+  static Future<String?> getGroupSharedBadge() async {
+    final String? version =
         await _channel.invokeMethod('getGroupSharedBadge');
     return version;
   }
